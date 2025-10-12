@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hbs_db
+    username: postgres
+    password: postgres
+    hikari:
+      schema: hbs_schema
+      connection-ini-sql: CREATE SCHEMA IF NOT EXISTS hbs_schema
+      connection-timeout: 10000
