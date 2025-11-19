@@ -20,7 +20,4 @@ public class UpsertRoomRequest {
 
     private Integer capacity;
 
-    private LocalDate occupanceStart;
-
-    private LocalDate occupancyEnd;
 }

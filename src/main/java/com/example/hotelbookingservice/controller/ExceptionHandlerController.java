@@ -1,6 +1,7 @@
 package com.example.hotelbookingservice.controller;
 
 import com.example.hotelbookingservice.dto.ErrorResponse;
+import com.example.hotelbookingservice.exception.EntityExistsException;
 import com.example.hotelbookingservice.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -44,8 +45,13 @@ public class ExceptionHandlerController {
 //                .body(new ErrorResponse(e.getLocalizedMessage()));
 //    }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> unhandledError(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal server error"));
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<ErrorResponse> unhandledError(RuntimeException e) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal server error"));
+//    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<ErrorResponse> existsExceptionHandler(EntityExistsException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getLocalizedMessage()));
     }
 }

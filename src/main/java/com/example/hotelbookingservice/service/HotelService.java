@@ -1,14 +1,17 @@
 package com.example.hotelbookingservice.service;
 
+import com.example.hotelbookingservice.dto.HotelFilter;
 import com.example.hotelbookingservice.entity.Hotel;
 import com.example.hotelbookingservice.exception.EntityNotFoundException;
 import com.example.hotelbookingservice.repository.HotelRepository;
+import com.example.hotelbookingservice.repository.HotelSpecification;
 import com.example.hotelbookingservice.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.logging.Handler;
 
 @Service
 @RequiredArgsConstructor
@@ -16,8 +19,8 @@ public class HotelService {
 
     private final HotelRepository repository;
 
-    public List<Hotel> findAll() {
-        return repository.findAll();
+    public List<Hotel> findAll(HotelFilter filter) {
+        return repository.findAll(HotelSpecification.withFilter(filter));
     }
 
     public Hotel findById(Long id) {

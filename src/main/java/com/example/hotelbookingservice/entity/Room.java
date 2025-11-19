@@ -1,17 +1,17 @@
 package com.example.hotelbookingservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Room {
 
     @Id
@@ -28,9 +28,9 @@ public class Room {
 
     private Integer capacity;
 
-    private LocalDate occupanceStart;
-
-    private LocalDate occupancyEnd;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<UnavailableDate> occupancyDates = new TreeSet<>();//or use Period or Duration classes
 
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)

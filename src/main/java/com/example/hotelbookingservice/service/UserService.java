@@ -1,48 +1,78 @@
 package com.example.hotelbookingservice.service;
 
+import com.example.hotelbookingservice.entity.Role;
 import com.example.hotelbookingservice.entity.User;
+import com.example.hotelbookingservice.exception.EntityExistsException;
+import com.example.hotelbookingservice.exception.EntityNotFoundException;
+import com.example.hotelbookingservice.kafka.mapper.EventMapper;
+import com.example.hotelbookingservice.kafka.model.RegisterUser;
 import com.example.hotelbookingservice.repository.UserRepository;
 import com.example.hotelbookingservice.utils.BeanUtils;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository repository;
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final KafkaTemplate<String, RegisterUser> kafkaTemplate;
+
+    private final EventMapper eventMapper;
+
+    @Value("${app.kafka.registerUserTopic}")
+    private String topicName;
 
     public List<User> findAll() {
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
-    public User findByName(String name) {
-        return repository.findByName(name);
+    public User findByUsername(String name) {
+        return userRepository.findByUsername(name)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("User with name {0} not found", name)));
     }
 
-    public User create(User user) {
-        if (repository.findByNameAndEmail(user.getName(), user.getEmail()) != null) {
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("User with id {0} not found", id)));
+    }
+
+    public User save(User user, Role role) {
+        if (userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail()).isPresent()) {
             throw new EntityExistsException(
-                    MessageFormat.format("User with name {0} and email {1} exists", user.getName(), user.getEmail()));
+                    MessageFormat.format("User with name {0} and email already {1} exists", user.getUsername(), user.getEmail()));
         }
-        return repository.save(user);
+        user.setRoles(Collections.singletonList(role));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        role.setUser(user);
+        User savedUser = userRepository.save(user);
+        kafkaTemplate.send(topicName, eventMapper.userToRegisterUser(savedUser));
+        return savedUser;
     }
 
-    public User update(Long id, User user) {
-        User existedUser = repository.findById(id).orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("User with id {0} not found", id)));
-        if (existedUser != null) {
+    public User update(User user) {
+        User existedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("User with id {0} not found", user.getId())));
+        //if (existedUser != null) {
             BeanUtils.copyNonNullProperties(user, existedUser);
-            return repository.save(existedUser);
-        }
-        return null;
+            return userRepository.save(existedUser);
+        //}
+        //return null;
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
+
+
 }

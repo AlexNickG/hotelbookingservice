@@ -1,12 +1,21 @@
 package com.example.hotelbookingservice.repository;
 
 import com.example.hotelbookingservice.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByName(String name);
+    @Override
+    Page<User> findAll(Pageable pageable);
 
-    User findByNameAndEmail(String name, String email);
+    @EntityGraph(attributePaths = {"roles"})
+    Optional<User> findByUsername(String name);
+
+    Optional<User> findByUsernameAndEmail(String name, String email);
 
 }

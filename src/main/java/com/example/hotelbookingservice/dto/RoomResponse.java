@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class RoomResponse {
+public class  RoomResponse {
 
     private Long id;
 
@@ -21,8 +21,4 @@ public class RoomResponse {
     private BigDecimal cost;
 
     private Integer capacity;
-
-    private LocalDate occupanceStart;
-
-    private LocalDate occupancyEnd;
 }
