@@ -10,6 +10,7 @@ import com.example.hotelbookingservice.service.BookingService;
 import com.example.hotelbookingservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,20 +31,22 @@ public class BookingController {
     private final UserService userService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public BookingListResponse getAllBookings() {
-        BookingListResponse responseList = new BookingListResponse();
-        BookingResponse response = new BookingResponse();
-        List<BookingResponse> bookingResponseList = bookingService.getBookedRoomsList().stream().map(booking -> {
-            response.setId(booking.getId());
-            response.setRoomId(booking.getRoom().getId());
-            response.setUserId(booking.getUser().getId());
-            response.setCheckIn(booking.getCheckIn());
-            response.setCheckOut(booking.getCheckOut());
-            return response;
-        }).toList();
-        responseList.setBookingResponseList(bookingResponseList);
-        return responseList;
+
+        return bookingMapper.bookingListToBookingListResponse(bookingService.getBookedRoomsList());
+//        BookingListResponse responseList = new BookingListResponse();
+//        BookingResponse response = new BookingResponse();
+//        List<BookingResponse> bookingResponseList = bookingService.getBookedRoomsList().stream().map(booking -> {
+//            response.setId(booking.getId());
+//            response.setRoomId(booking.getRoom().getId());
+//            response.setUserId(booking.getUser().getId());
+//            response.setCheckIn(booking.getCheckIn());
+//            response.setCheckOut(booking.getCheckOut());
+//            return response;
+//        }).toList();
+//        responseList.setBookingResponseList(bookingResponseList);
+        //return responseList;
     }
 
     @PostMapping

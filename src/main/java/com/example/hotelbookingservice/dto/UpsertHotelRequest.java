@@ -11,5 +11,7 @@ public class UpsertHotelRequest {
 
     private String hotelCity;
 
+    private Integer newMark;
+
     private Integer distance;
 }

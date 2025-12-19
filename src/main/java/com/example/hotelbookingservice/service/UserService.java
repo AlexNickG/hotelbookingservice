@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public User save(User user, Role role) {
-        if (userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail()).isPresent()) {
+        if (userRepository.findByUsernameAndEmail(user.getUsername(), user.getEmail()).isPresent()) {//TODO: проверять отдельно существование имени пользователя и его почты
             throw new EntityExistsException(
                     MessageFormat.format("User with name {0} and email already {1} exists", user.getUsername(), user.getEmail()));
         }
@@ -64,8 +64,11 @@ public class UserService {
         User existedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("User with id {0} not found", user.getId())));
         //if (existedUser != null) {
-            BeanUtils.copyNonNullProperties(user, existedUser);
-            return userRepository.save(existedUser);
+        BeanUtils.copyNonNullProperties(user, existedUser);
+        if(user.getPassword() != null) {
+            existedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        return userRepository.save(existedUser);
         //}
         //return null;
     }

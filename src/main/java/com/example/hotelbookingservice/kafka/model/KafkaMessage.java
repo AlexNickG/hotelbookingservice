@@ -14,6 +14,6 @@ public class KafkaMessage {
 
     @Id
     private String id;
-    private String type; // "TEXT", "IMAGE", ...
+    private String type; // "Register user", "Booking room"
     private Map<String, Object> payload;
 }

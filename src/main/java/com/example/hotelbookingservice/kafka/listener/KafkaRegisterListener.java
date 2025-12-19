@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KafkaRegisterListener {
 
-    private final KafkaService service;
+    private final KafkaService kafkaService;
 
     @KafkaListener(topics = "${app.kafka.registerUserTopic}",
             groupId = "${app.kafka.registerUserGroupId}",
@@ -28,7 +28,7 @@ public class KafkaRegisterListener {
                         @Header(KafkaHeaders.RECEIVED_PARTITION) Integer partition,
                         @Header(KafkaHeaders.RECEIVED_TIMESTAMP) Long timestamp) {
         log.info("Received message: {}", message);
-        service.addRegister(message);
+        kafkaService.addRegister(message);
 
     }
 }

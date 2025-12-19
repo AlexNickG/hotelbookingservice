@@ -58,7 +58,7 @@ public class BookingService {
             //kafkaService.addBooking(eventMapper.bookingToBookingRoom(newBooking));
             return newBooking;
         }
-        throw new IllegalStateException("Room is not available for the requested period");
+        throw new IllegalStateException("Room is not available for the requested period");//TODO: Выбрасывать другое исключение
     }
 
     public List<Booking> getBookedRoomsList() {

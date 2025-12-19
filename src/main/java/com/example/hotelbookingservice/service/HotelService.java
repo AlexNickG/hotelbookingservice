@@ -43,4 +43,21 @@ public class HotelService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    public Hotel changeHotelRating(Long id, Integer newMark) {
+
+        Hotel existedHotel = findById(id);
+        if (existedHotel.getRatingsNum() != null) {
+            Float totalRating = (existedHotel.getRating() * existedHotel.getRatingsNum()) - existedHotel.getRating() + newMark;
+
+            float newRating = totalRating / existedHotel.getRatingsNum();
+            Float roundedNewRating = Math.round(newRating * 10) / 10f;
+            existedHotel.setRating(roundedNewRating);
+            existedHotel.setRatingsNum(existedHotel.getRatingsNum() + 1);
+        } else {
+            existedHotel.setRating(Float.valueOf(newMark));
+            existedHotel.setRatingsNum(1);
+        }
+        return repository.save(existedHotel);
+    }
 }

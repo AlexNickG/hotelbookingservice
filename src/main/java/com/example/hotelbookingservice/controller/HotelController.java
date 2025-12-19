@@ -1,9 +1,6 @@
 package com.example.hotelbookingservice.controller;
 
-import com.example.hotelbookingservice.dto.HotelFilter;
-import com.example.hotelbookingservice.dto.HotelListResponse;
-import com.example.hotelbookingservice.dto.HotelResponse;
-import com.example.hotelbookingservice.dto.UpsertHotelRequest;
+import com.example.hotelbookingservice.dto.*;
 import com.example.hotelbookingservice.entity.Hotel;
 import com.example.hotelbookingservice.mapper.HotelMapper;
 import com.example.hotelbookingservice.service.HotelService;
@@ -49,13 +46,10 @@ public class HotelController {
         return ResponseEntity.noContent().build();
     }
 
-    public Hotel getHotelRating(Hotel hotel, Integer newMark) {
+    @PatchMapping("/{id}")
+    public HotelResponse changeHotelRating(@PathVariable Long id, @RequestBody UpsertHotelRatingRequest request) {
 
-        Float totalRating = (hotel.getRating() * hotel.getRatingsNum()) - hotel.getRating() + newMark;
+        return hotelMapper.hotelToResponse(service.changeHotelRating(id, request.getNewMark()));
 
-        Float newRating = totalRating / hotel.getRatingsNum();
-        hotel.setRating(newRating);
-        hotel.setRatingsNum(hotel.getRatingsNum() + 1);
-        return hotel;
     }
 }
