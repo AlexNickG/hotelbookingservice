@@ -7,6 +7,7 @@ import com.example.hotelbookingservice.repository.RoomRepository;
 import com.example.hotelbookingservice.repository.RoomSpecification;
 import com.example.hotelbookingservice.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -19,7 +20,7 @@ public class RoomService {
     private final RoomRepository repository;
 
     public List<Room> findAll(RoomFilter filter) {
-        return repository.findAll(RoomSpecification.withFilter(filter));
+        return repository.findAll(RoomSpecification.withFilter(filter), PageRequest.of(filter.getPageNumber(), filter.getPageSize())).getContent();
     }
 
     public Room findById(Long id) {

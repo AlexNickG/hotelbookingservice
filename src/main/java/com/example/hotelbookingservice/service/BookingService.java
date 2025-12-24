@@ -4,10 +4,7 @@ import com.example.hotelbookingservice.entity.Booking;
 import com.example.hotelbookingservice.entity.Room;
 import com.example.hotelbookingservice.entity.UnavailableDate;
 import com.example.hotelbookingservice.kafka.mapper.EventMapper;
-import com.example.hotelbookingservice.kafka.model.BookingRoom;
-import com.example.hotelbookingservice.kafka.model.RegisterUser;
-import com.example.hotelbookingservice.kafka.service.KafkaService;
-import com.example.hotelbookingservice.mapper.BookingMapper;
+import com.example.hotelbookingservice.kafka.model.KafkaMessage;
 import com.example.hotelbookingservice.repository.BookingRepository;
 import com.example.hotelbookingservice.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +23,12 @@ public class BookingService {
 
     private final EventMapper eventMapper;
 
-    private final KafkaTemplate<String, BookingRoom> kafkaTemplate;
+    private final KafkaTemplate<String, KafkaMessage> kafkaTemplate;
 
     @Value("${app.kafka.bookingRoomTopic}")
     private String topicName;
 
     private final RoomService roomService;
-
-    private final KafkaService kafkaService;
-    private final RoomRepository roomRepository;
 
     @Transactional
     public Booking toBookARoom(Booking booking) {
@@ -54,7 +45,7 @@ public class BookingService {
             booking.setRoom(room);
             //2. Добавить забронированные даты в список занятых дат комнаты.
             Booking newBooking = bookingRepository.save(booking);
-            kafkaTemplate.send(topicName, eventMapper.bookingToBookingRoom(newBooking));
+            kafkaTemplate.send(topicName, eventMapper.bookingToKafkaMessage(newBooking));
             //kafkaService.addBooking(eventMapper.bookingToBookingRoom(newBooking));
             return newBooking;
         }

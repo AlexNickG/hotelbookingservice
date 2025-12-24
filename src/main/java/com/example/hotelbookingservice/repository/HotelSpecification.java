@@ -40,7 +40,7 @@ public interface HotelSpecification {
             if (adTitle == null || adTitle.isBlank()) {
                 return null;
             }
-            return cb.equal(root.get("ad_title"), adTitle);
+            return cb.equal(root.get("adTitle"), adTitle);
         };
     }
 
@@ -49,7 +49,7 @@ public interface HotelSpecification {
             if (hotelCity == null || hotelCity.isBlank()) {
                 return null;
             }
-            return cb.equal(root.get("city"), hotelCity);
+            return cb.equal(root.get("hotelCity"), hotelCity);
         };
     }
 
@@ -85,7 +85,7 @@ public interface HotelSpecification {
             if (ratingsNum == null || ratingsNum == 0) {
                 return null;
             }
-            return cb.equal(root.get("number_of_reviews"), ratingsNum);
+            return cb.greaterThanOrEqualTo(root.get("ratingsNum"), ratingsNum);
         };
     }
 }

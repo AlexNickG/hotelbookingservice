@@ -22,8 +22,8 @@ public class KafkaConfiguration {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("@{app.kafka.registerUserGroupId}")
-    private String registerUserGroupId;
+    @Value("@{app.kafka.statisticGroupId}")
+    private String statisticGroupId;
 
     @Bean
     public <T> ProducerFactory<String, T> kafkaMessageProducerFactory(ObjectMapper objectMapper) {
@@ -48,7 +48,7 @@ public class KafkaConfiguration {
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, registerUserGroupId);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, statisticGroupId);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), new JsonDeserializer<>(objectMapper));

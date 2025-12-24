@@ -5,7 +5,7 @@ import com.example.hotelbookingservice.entity.User;
 import com.example.hotelbookingservice.exception.EntityExistsException;
 import com.example.hotelbookingservice.exception.EntityNotFoundException;
 import com.example.hotelbookingservice.kafka.mapper.EventMapper;
-import com.example.hotelbookingservice.kafka.model.RegisterUser;
+import com.example.hotelbookingservice.kafka.model.KafkaMessage;
 import com.example.hotelbookingservice.repository.UserRepository;
 import com.example.hotelbookingservice.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final KafkaTemplate<String, RegisterUser> kafkaTemplate;
+    private final KafkaTemplate<String, KafkaMessage> kafkaTemplate;
 
     private final EventMapper eventMapper;
 
@@ -56,7 +56,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         role.setUser(user);
         User savedUser = userRepository.save(user);
-        kafkaTemplate.send(topicName, eventMapper.userToRegisterUser(savedUser));
+        kafkaTemplate.send(topicName, eventMapper.registerUserToKafkaMessage(savedUser));
         return savedUser;
     }
 

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room> {
 
-    @Override
-    Page<Room> findAll(Pageable pageable);
+    //@Override
+    //Page<Room> findAll(Pageable pageable);
 }

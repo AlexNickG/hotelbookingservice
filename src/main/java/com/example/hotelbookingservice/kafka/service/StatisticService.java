@@ -1,64 +1,75 @@
 package com.example.hotelbookingservice.kafka.service;
 
-import com.example.hotelbookingservice.kafka.model.BookingRoom;
+import com.example.hotelbookingservice.kafka.model.KafkaMessage;
+import com.example.hotelbookingservice.kafka.repository.KafkaMessageRepository;
+import com.opencsv.CSVWriter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StatisticService {
 
-//    @Value("${app.path.statisticFile}")
-//    private String statisticFile;
+    @Value("${app.path.statisticFile}")
+    private String statisticFile;
 
-    private final Path path = Path.of("${app.path.statisticFile}");
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private final KafkaMessageRepository messageRepository;
 
-    public Function<BookingRoom, List<String>> getRowMapper() {
-        return bookingRoom -> {
-            DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE;
-            return List.of(
-                    Objects.toString(bookingRoom.getUserId(), ""),
-                    bookingRoom.getCheckIn() != null ? bookingRoom.getCheckIn().format(df) : "",
-                    bookingRoom.getCheckOut() != null ? bookingRoom.getCheckOut().format(df) : ""
-            );
-        };
+    public void saveMessage(KafkaMessage message) {
+        messageRepository.save(message);
     }
 
-    public void writeBookingRoomsToCsv(List<BookingRoom> items) throws IOException {
-        Path parent = path.getParent() == null ? Path.of(".") : path.getParent();
-        Files.createDirectories(parent);
+    public void downloadStatistics() {
+        List<KafkaMessage> messages = messageRepository.findAll();
 
-        try (BufferedWriter writer = Files.newBufferedWriter(path,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        List<String[]> csvRows = parseMessagesToCsvRows(messages);
 
-            for (BookingRoom item : items) {
-                List<String> cols = getRowMapper().apply(item);
-                String row = cols.stream()
-                        .map(s -> escapeCsv(Objects.toString(s, "")))
-                        .collect(Collectors.joining(","));
-                writer.write(row);
-                writer.newLine();
-            }
+        try (CSVWriter writer = new CSVWriter(new FileWriter(statisticFile),
+                ';',  // Разделитель (можно изменить на ',')
+                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END)) {
+
+            writer.writeAll(csvRows);
+            //System.out.println("Экспорт завершён: " + filePath);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private String escapeCsv(String s) {
-        if (s == null || s.isEmpty()) return "";
-        String escaped = s.replace("\"", "\"\"");
-        boolean mustQuote = s.contains(",") || s.contains("\"") || s.contains("\n") || s.contains("\r");
-        return mustQuote ? "\"" + escaped + "\"" : escaped;
+    private List<String[]> parseMessagesToCsvRows(List<KafkaMessage> messages) {
+        List<String[]> csvRows = new ArrayList<>();
+
+        csvRows.add(new String[]{"type", "userId", "checkIn", "checkOut"});
+
+        for (KafkaMessage msg : messages) {
+            String type = msg.getType();
+            String userId = msg.getUserId() != null ? msg.getUserId() : "";
+
+            String checkIn = "";
+            String checkOut = "";
+
+            if ("Booking room".equals(type)) {
+                if (msg.getCheckIn() != null) {
+                    checkIn = msg.getCheckIn().format(DATE_FORMATTER);
+                }
+                if (msg.getCheckOut() != null) {
+                    checkOut = msg.getCheckOut().format(DATE_FORMATTER);
+                }
+            }
+            csvRows.add(new String[]{type, userId, checkIn, checkOut});
+        }
+        return csvRows;
     }
-
-
 }

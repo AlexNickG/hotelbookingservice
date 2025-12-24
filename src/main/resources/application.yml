@@ -1,6 +1,8 @@
 spring:
   jpa:
     generate-ddl: true
+    show-sql: true
+    #open-in-view: false
   datasource:
     url: jdbc:postgresql://localhost:5432/hbs_db # для запуска БД и приложения в контейнерах, вместо 'localhost' нужно указать имя контейнера - 'postgres'
     username: postgres
@@ -19,8 +21,13 @@ spring:
 app:
   kafka:
     registerUserTopic: "register-user-topic"
-    registerUserGroupId: "register-user-group-id"
     bookingRoomTopic: "booking-room-topic"
-    bookingRoomGroupId: "booking-room-group-id"
+    statisticGroupId: "statistic-group-id"
   path:
     statisticFile: "C:/Users/alexn/IdeaProjects/hotelbookingservice/statistics.csv"
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: info

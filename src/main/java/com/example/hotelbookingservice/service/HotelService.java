@@ -7,6 +7,7 @@ import com.example.hotelbookingservice.repository.HotelRepository;
 import com.example.hotelbookingservice.repository.HotelSpecification;
 import com.example.hotelbookingservice.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -20,7 +21,7 @@ public class HotelService {
     private final HotelRepository repository;
 
     public List<Hotel> findAll(HotelFilter filter) {
-        return repository.findAll(HotelSpecification.withFilter(filter));
+        return repository.findAll(HotelSpecification.withFilter(filter), PageRequest.of(filter.getPageNumber(), filter.getPageSize())).getContent();
     }
 
     public Hotel findById(Long id) {
