@@ -20,7 +20,7 @@ public class RoomFilter {
 
     private Integer capacity;
 
-    private LocalDate occupancyStart;//or use Period or Duration classes
+    private LocalDate occupancyStart;
 
     private LocalDate occupancyEnd;
 
@@ -29,5 +29,4 @@ public class RoomFilter {
     private Integer pageSize;
 
     private Integer pageNumber;
-
 }

@@ -76,19 +76,15 @@ public interface RoomSpecification {
             Root<UnavailableDate> subRoot = subquery.from(UnavailableDate.class);
             subquery.select(subRoot.get("id"));
 
-            // предикат пересечения интервалов
             Predicate overlap;
             if (occupancyStart != null && occupancyEnd != null) {
-                // u.startDate <= end && u.endDate >= start
                 overlap = cb.and(
                         cb.lessThanOrEqualTo(subRoot.get("endOccupancy"), occupancyEnd),
                         cb.greaterThanOrEqualTo(subRoot.get("startOccupancy"), occupancyStart)
                 );
             } else if (occupancyStart != null) {
-                // ищем записи с u.endDate >= start
                 overlap = cb.greaterThanOrEqualTo(subRoot.get("startOccupancy"), occupancyStart);
             } else {
-                // occupancyEnd != null — ищем записи с u.startDate <= end
                 overlap = cb.lessThanOrEqualTo(subRoot.get("endOccupancy"), occupancyEnd);
             }
 
@@ -97,30 +93,9 @@ public interface RoomSpecification {
                     overlap
             );
 
-            // возвращаем комнаты, для которых НЕ существует пересекающейся unavailableDate
             return cb.not(cb.exists(subquery));
         };
 
-//        Specification<Room> roomSpecification =
-//         (root, query, cb) -> {
-//            if (occupancyStart == null && occupancyEnd == null) {
-//                return null;
-//            }
-//            var subquery = query.subquery(Long.class);
-//            var subRoot = subquery.from(Room.class);
-//            var joinDates = subRoot.join("occupancyDates");
-//            subquery.select(subRoot.get("id"))
-//                    .where(
-//                            cb.equal(subRoot.get("id"), root.get("id")),
-//                            cb.between(joinDates.as(LocalDate.class), occupancyStart, occupancyEnd)
-//                    );
-//
-//            // Основной запрос: исключаем комнаты, у которых есть занятые даты в диапазоне
-//            return cb.not(cb.exists(subquery));
-//            //if ()
-//            //return cb.equal(root.get("room").get("occupancyDates"), occupancyStart);
-//        };
-//return roomSpecification;
     }
 
     static Specification<Room> byHotelId(Long hotelId) {

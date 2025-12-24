@@ -1,10 +1,8 @@
 package com.example.hotelbookingservice.mapper;
 
-import com.example.hotelbookingservice.dto.RoomResponse;
 import com.example.hotelbookingservice.dto.UpsertRoomRequest;
 import com.example.hotelbookingservice.entity.Room;
 import com.example.hotelbookingservice.service.HotelService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class RoomMapperDelegate implements RoomMapper {
@@ -23,16 +21,4 @@ public abstract class RoomMapperDelegate implements RoomMapper {
         room.setCapacity(request.getCapacity());
         return room;
     }
-
-//    @Override
-//    public RoomResponse roomToResponse(Room room) {
-//        RoomResponse response = new RoomResponse();
-//        response.setHotelId(room.getHotel().getId());
-//        response.setName(room.getName());
-//        response.setDescription(room.getDescription());
-//        response.setNumber(room.getNumber());
-//        response.setCost(room.getCost());
-//        response.setCapacity(room.getCapacity());
-//        return null;
-//    }
 }

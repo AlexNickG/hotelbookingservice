@@ -3,6 +3,8 @@ package com.example.hotelbookingservice.controller;
 import com.example.hotelbookingservice.dto.ErrorResponse;
 import com.example.hotelbookingservice.exception.EntityExistsException;
 import com.example.hotelbookingservice.exception.EntityNotFoundException;
+import com.example.hotelbookingservice.exception.ErrorFileSaveException;
+import com.example.hotelbookingservice.exception.NotAvailableRoomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -24,13 +26,13 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> notAvailableExceptionHandler(IllegalStateException e) {
+    @ExceptionHandler(NotAvailableRoomException.class)
+    public ResponseEntity<ErrorResponse> notAvailableExceptionHandler(NotAvailableRoomException e) {
         log.error("Room is not available for the requested period: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getLocalizedMessage()));
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> notValid(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> notValidExceptionHandler(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         List<String> errorMessages = bindingResult.getAllErrors()
                 .stream()
@@ -41,6 +43,12 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(errorMessage));
+    }
+
+    @ExceptionHandler(ErrorFileSaveException.class)
+    public ResponseEntity<ErrorResponse> cantSaveStatisticsExceptionHandler(ErrorFileSaveException e) {
+        log.error("Не удалось сохранить файл статистики");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getLocalizedMessage()));
     }
 
 //    @ExceptionHandler(UserIdNotValidException.class)

@@ -10,6 +10,4 @@ public class UpsertUserRequest {
     private String password;
 
     private String email;
-
-    //private String role;
 }

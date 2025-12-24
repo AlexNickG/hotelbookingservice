@@ -3,7 +3,6 @@ package com.example.hotelbookingservice.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Data
 public class UpsertRoomRequest {
@@ -19,5 +18,4 @@ public class UpsertRoomRequest {
     private BigDecimal cost;
 
     private Integer capacity;
-
 }

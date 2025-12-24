@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 
 @Entity
 @Getter
@@ -18,8 +17,6 @@ public class UnavailableDate implements Comparable<UnavailableDate> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn
     private LocalDate startOccupancy;
 
     private LocalDate endOccupancy;

@@ -1,5 +1,6 @@
-package com.example.hotelbookingservice.kafka.service;
+package com.example.hotelbookingservice.service;
 
+import com.example.hotelbookingservice.exception.ErrorFileSaveException;
 import com.example.hotelbookingservice.kafka.model.KafkaMessage;
 import com.example.hotelbookingservice.kafka.repository.KafkaMessageRepository;
 import com.opencsv.CSVWriter;
@@ -35,16 +36,15 @@ public class StatisticService {
         List<String[]> csvRows = parseMessagesToCsvRows(messages);
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(statisticFile),
-                ';',  // Разделитель (можно изменить на ',')
+                ',',
                 CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END)) {
 
             writer.writeAll(csvRows);
-            //System.out.println("Экспорт завершён: " + filePath);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ErrorFileSaveException("Не удалось сохранить файл статистики");
         }
     }
 

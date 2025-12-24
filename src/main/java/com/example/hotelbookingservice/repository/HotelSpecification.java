@@ -2,7 +2,6 @@ package com.example.hotelbookingservice.repository;
 
 import com.example.hotelbookingservice.dto.HotelFilter;
 import com.example.hotelbookingservice.entity.Hotel;
-import com.example.hotelbookingservice.entity.Room;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface HotelSpecification {

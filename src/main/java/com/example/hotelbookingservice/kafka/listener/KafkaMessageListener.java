@@ -1,7 +1,7 @@
 package com.example.hotelbookingservice.kafka.listener;
 
 import com.example.hotelbookingservice.kafka.model.KafkaMessage;
-import com.example.hotelbookingservice.kafka.service.StatisticService;
+import com.example.hotelbookingservice.service.StatisticService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

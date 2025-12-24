@@ -7,15 +7,12 @@ import com.example.hotelbookingservice.entity.Hotel;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface HotelMapper {
 
     Hotel requestToHotel(UpsertHotelRequest request);
-
-    Hotel requestToHotel(Long id, UpsertHotelRequest request);
 
     HotelResponse hotelToResponse(Hotel hotel);
 
@@ -27,8 +24,4 @@ public interface HotelMapper {
 
         return response;
     }
-
-
-
-
 }

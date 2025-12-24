@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.logging.Handler;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +34,11 @@ public class HotelService {
 
     public Hotel update(Long id, Hotel hotel) {
         Hotel existedHotel = findById(id);
-        if (existedHotel != null) {
-            BeanUtils.copyNonNullProperties(hotel, existedHotel);
-            return repository.save(existedHotel);
+        if (existedHotel == null) {
+            throw new NoSuchElementException(MessageFormat.format("Hotel with id {0} not found", id));
         }
-        return null;
+        BeanUtils.copyNonNullProperties(hotel, existedHotel);
+        return repository.save(existedHotel);
     }
 
     public void delete(Long id) {
